@@ -96,14 +96,14 @@ public class Assessment {
 
 
 	public String toString(){
-        return ("Weight:"  + weight
-        		+ "\n Chest: "+ chest
-        		+ "\n Thigh: "+ thigh
-        		+ "\n upperArm: "+ upperArm
-        		+ "\n Waist: "+ waist
-        		+ "\n Hips: "+ hips
-        		+ "\n Comment: "+ comment
-        		+ "\n Trainer: "+ trainer);
+        return (" Weight:"  + weight
+        		+ "kg\n Chest: "+ chest
+        		+ "cm\n Thigh: "+ thigh
+        		+ "cm\n upperArm: "+ upperArm
+        		+ "cm\n Waist: "+ waist
+        		+ "cm\n Hips: "+ hips
+        		+ "cm\n Comment: "+ comment
+        		+ "\n Trainer: "+ trainer.getMemberName());
 	}         
 	
 }

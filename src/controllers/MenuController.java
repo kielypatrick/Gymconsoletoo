@@ -67,7 +67,7 @@ public class MenuController
     public MenuController()
     {
         try {
-      //      gym.loadMember();
+            gym.loadMember();
         }
         catch (Exception e) {System.err.println("Error reading from file: " + e);
         }
@@ -77,7 +77,7 @@ public class MenuController
         //read in the details....
         System.out.println("Welcome to Elite Fitness\n");
 
-        gym.addMembers();
+        //gym.addMembers();
         gym.addTrainers();
 
         runWelcome();
@@ -624,7 +624,7 @@ public class MenuController
     }
 
     private void runAssessments(Person trainer) {
-        System.out.println(gym.getMembers());
+        //System.out.println(gym.getMembers()); might be useful given a small membership
         int option = assessments();
         while (option != 0) {
 
@@ -638,12 +638,33 @@ public class MenuController
                     Member member = (gym.searchMembersByEmail(memberAss));
                     gym.addAssessment(trainer, member);
                     System.out.println("Assessment logged for " + member.getMemberName());
-
+                    try {
+                        gym.saveMember();
+                    }
+                    catch (Exception e) {
+                        System.err.println("Error writing to file: " + e);
+                    }
 
                     break;
 
+
                 case 2:
-                   // System.out.println(member.lastAssessment().toString());
+                    String name2 = validNextString("Name:\t");
+                    System.out.println(gym.searchMembersByName(name2));
+                    String memberAss2 = validNextString("Please enter email of member for assessment..\t");
+                    Member member2 = (gym.searchMembersByEmail(memberAss2));
+                    if (member2.sortedAssessmentDates().size() > 0) {
+                        System.out.println(member2.lastAssessment().toString());
+                        String newComment = validNextString("\nEnter New Comment" );
+                        member2.lastAssessment().setComment(newComment);
+                        System.out.println("\nNEW output to " + member2.getMemberName() + "\n" + member2.lastAssessment().toString());
+
+                    }
+                    else {
+                        System.out.println("\nNo data recorded for " + member2.getMemberName());
+                    }
+
+
                     break;
 
                 case 3:
@@ -695,7 +716,13 @@ public class MenuController
             }
         }
         return email;
+    }
 
+    public Member findMember() {
+        String name = validNextString("Name:\t");
+        System.out.println(gym.searchMembersByName(name));
+        String memberAss = validNextString("Please enter email of member for assessment..\t");
+        return (gym.searchMembersByEmail(memberAss));
 
     }
 }
