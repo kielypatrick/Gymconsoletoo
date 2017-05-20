@@ -12,10 +12,12 @@ import java.util.Scanner;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 
-import models.Member;
-import models.Person;
-import models.StudentMember;
-import models.Trainer;
+import models.*;
+import utils.Analytics;
+
+import static utils.ScannerInput.validNextDouble;
+import static utils.ScannerInput.validNextInt;
+import static utils.ScannerInput.validNextString;
 
 /**
  * Created by Patrick on 03/05/2017.
@@ -53,10 +55,18 @@ public GymApi(){
 
 
     public void addMembers(){
-      members.add(new StudentMember("John@mail.com", "John", "Kilkenny",
+      members.add(new StudentMember("J", "John", "Kilkenny",
             "m", 1.91, 91, "Student Plus", 59346, "WIT"));
 
-  }
+    }
+
+
+    public void addTrainers(){
+        trainers.add(new Trainer("q", "Patrick", "Waterford",
+                "m", "Injury Rehab"));
+
+    }
+
         
 
     public void addTrainer(Trainer trainer)
@@ -182,8 +192,8 @@ public GymApi(){
         for (Member member: members){
         	if (member.getMemberEmail().toUpperCase().equals(emailEntered.toUpperCase()))
         	{
-        		for (int i = 0; i < numberOfMembers();)
-				return members.get(i);
+
+				return member;
 
         	}
        
@@ -206,17 +216,17 @@ public GymApi(){
 		return null;            
     }
 
-    
+
     @SuppressWarnings("unchecked")
-    public void load() throws Exception
+    public void loadMember() throws Exception
     {
         XStream xstream = new XStream(new DomDriver());
         ObjectInputStream is = xstream.createObjectInputStream
-                (new FileReader("products.xml"));
+                (new FileReader("members.xml"));
         members = (ArrayList<Member>) is.readObject();
-        trainers = (ArrayList<Trainer>) is.readObject();
         is.close();
     }
+
 
     public void saveMember() throws Exception
     {
@@ -258,7 +268,7 @@ public GymApi(){
         if (members.size() > 0){
             String listOfMembers = "";
             for (Member member: members){
-                if (member.isIdealBodyWeight()){
+                if (Analytics.isIdealBodyWeight(member)){
                     listOfMembers += member.toString() + "\n";
                 }
             }
@@ -312,7 +322,7 @@ public GymApi(){
         if (members.size() > 0){
             String listOfMembers = "";
             for (Member member: members){
-                if (member.determineBMICategory().toUpperCase().contains(category.toUpperCase())){
+                if (Analytics.determineBMICategory(Analytics.calculateBMI(member )).toUpperCase().contains(category.toUpperCase())){
                     listOfMembers += member.toString() + "\n";
                 }
             }
@@ -326,38 +336,6 @@ public GymApi(){
         }
     }
 
-    /**
-     * List all the members' weight and height both imperically and metrically.
-     *
-     * @return Each member in the gym with the weight and height listed both imperically and metrically.
-     *
-     * <pre>
-     * The format of the output is like so:
-     *
-     *     Joe Soap:     xx kg (xxx lbs)     x.x metres (xx inches).
-     *     Joan Soap:    xx kg (xxx lbs)     x.x metres (xx inches).
-     *
-     * If there are no members in the gym, the message
-     *      "There are no members in the gym" should be returned.
-     * </pre>
-     */
-    public String listMemberDetailsImperialAndMetric(){
-        if (members.size() > 0){
-            String listOfMembers = "";
-            for (Member member: members){
-                listOfMembers += member.getMemberName() + ":\t\t"
-                        + member.getStartingWeight() + " kg ("
-                        + member.convertWeightKGtoPounds() + " lbs)\t\t"
-                        + member.getHeight() + " metres ("
-                        + member.convertHeightMetresToInches() + " inches)."
-                        + "\n";
-            }
-            return listOfMembers;
-        }
-        else{
-            return "There are no members in the gym.";
-        }
-    }
 
 
     /**
@@ -378,5 +356,37 @@ public GymApi(){
         return ( "List of members in the gym:\n"
                 + getMembers());
     }
+
+    public void addAssessment(Person trainer, Member member) {
+        double weight;
+        while (true) {
+            weight = validNextDouble("Weight: ");
+            if ((weight >= 35) && (weight <= 250)) {
+                break;
+            } else {
+                System.out.println("Invalid weight entered: " + weight);
+                System.out.println("\nPlease enter a starting weight between 35 and 250 kgs");
+            }
+        }
+
+        int chest = validNextInt("Chest:\t");
+        int thigh = validNextInt("Thigh:\t");
+        int upperArm = validNextInt("Upper Arm:\t");
+        int waist = validNextInt("Waist:\t");
+        int hips = validNextInt("Hips:\t");
+        String comment = validNextString("Trainer Comment:\t");
+
+        member.addAssessment(new Assessment(weight, chest, thigh, upperArm, waist, hips, comment, trainer));
+    }
+
+    public boolean isValidIndex(int index)
+    {
+        return ( (index >= 0) && (index < members.size()) );
+    }
+
+
+
+
+
 
 }

@@ -4,10 +4,7 @@ import java.util.Scanner;
 
 
 import controllers.GymApi;
-import models.Member;
-import models.Person;
-import models.PremiumMember;
-import models.StudentMember;
+import models.*;
 import utils.Analytics;
 import utils.ScannerInput;
 
@@ -70,7 +67,7 @@ public class MenuController
     public MenuController()
     {
         try {
-            gym.loadMember();
+      //      gym.loadMember();
         }
         catch (Exception e) {System.err.println("Error reading from file: " + e);
         }
@@ -237,7 +234,7 @@ public class MenuController
                     case 1:
 
                         String memberType = validNextString("Do you have a valid Student ID? (Y/N)");
-                        String email = validNextString("Enter email");
+                        emailCheck();
                         String name = validNextString("Name:");
                         String address = validNextString("Address:");
                         String gender = validNextString("Gender: (m/f)");
@@ -246,11 +243,11 @@ public class MenuController
                         String packag = validNextString("Package:");
                         if (memberType.equals("Y") || memberType.equals("y")) {
                             String college = validNextString("College:");
-                            Integer studentId = validNextInt("Student ID Number:");
-                            gym.addMember(new StudentMember(email, name, address, gender, height, weight, packag, studentId, college));
+                            int studentId = validNextInt("Student ID Number:");
+                            gym.addMember(new StudentMember(emailCheck(), name, address, gender, height, weight, packag, studentId, college));
                             }
                         else {
-                            gym.addMember(new PremiumMember(email, name, address, gender, height, weight, packag));
+                            gym.addMember(new PremiumMember(emailCheck(), name, address, gender, height, weight, packag));
                         }
                         try {
                             gym.saveMember();
@@ -260,16 +257,17 @@ public class MenuController
 
                             break;
                     case 2:
-                                System.out.println("Please enter email address..");
-                                System.out.print("\tEmail: ");
-                                String temail = input.nextLine();
-                                //gym  call the search method in the gymapi
-                                gym.searchTrainersByEmail(temail);
+                        emailCheck();
+                         String tname = validNextString("Name:\t");
+                         String taddress = validNextString("Address:\t");
+                         String tgender = validNextString("Gender: (m/f)\t");
+                         String specialty = validNextString("Specialty:\t ");
+                         gym.addTrainer(new Trainer(emailCheck(), tname, taddress, tgender, specialty));
 
-                                break;
-                            default:
-                                System.out.println("Invalid option entered: " + registerOption);
-                                break;
+                            break;
+                         default:
+                            System.out.println("Invalid option entered: " + registerOption);
+                            break;
 
                 }
 
@@ -322,7 +320,7 @@ public class MenuController
                     break;
 
                 case 3:
-                    //runMemberProgress(member);
+                    runMemberProgress(member);
                  //   System.out.println(member.assessments.size());
 
 
@@ -403,6 +401,51 @@ public class MenuController
         }
     }
 
+    private int progressMenu(Member member)
+    {
+        System.out.println("  View your progress by: ");
+        System.out.println("  1) Weight");
+        System.out.println("  2) Body Mass Index(BMI)");
+        System.out.println("  3) Chest Measurement");
+        System.out.println("  4) Thigh Measurement");
+        System.out.println("  5) Upper Arm Measurement");
+        System.out.println("  6) Waist Measurement");
+        System.out.println("  7) Hips Measurement");
+        System.out.println(" \n) Exit");
+        int option = validNextInt("==>> ");
+        return option;
+    }
+
+    private void runMemberProgress(Member member) {
+        int option = progressMenu(member);
+        while (option != 0) {
+            switch (option) {
+                case 1:
+                    System.out.println("Starting weight: " + member.getStartingWeight() + " kgs");
+                    if (member.sortedAssessmentDates().size() > 0) {
+                        System.out.println("Current weight: " + member.lastAssessment().getWeight());
+                    } else {
+                        System.out.println("You have not completed an assessment yet!");
+                    }
+                    break;
+                default:
+                    System.out.println("Invalid option entered: " + option);
+                    break;
+
+
+            }
+
+            //pause the program so that the user can read what we just printed to the terminal window
+            System.out.println("\nPress any key to continue...");
+            input.nextLine();
+            input.nextLine();  //this second read is required - bug in Scanner class; a String read is ignored straight after reading an int.
+
+            runMemberMenu(member);
+        }
+
+
+    }
+
 
     private int trainerMenu() {
         System.out.println("\t1. Add Member\n" +
@@ -428,8 +471,7 @@ public class MenuController
             switch (trainerOption) {
 
                 case 1:
-
-                    String email = validNextString("Enter email:\t");
+                    emailCheck();
                     String name = validNextString("Name:\t");
                     String address = validNextString("Address:\t");
                     String gender = validNextString("Gender: (m/f)\t"	);
@@ -440,9 +482,9 @@ public class MenuController
                     if (memberType.equals("Y") || memberType.equals("y")) {
                         String college = validNextString("College:\t");
                         Integer studentId = validNextInt("Student ID Number:\t");
-                        gym.addMember(new StudentMember(email, name, address, gender, height, weight, packag, studentId, college));
+                        gym.addMember(new StudentMember(emailCheck(), name, address, gender, height, weight, packag, studentId, college));
                     } else {
-                        gym.addMember(new PremiumMember(email, name, address, gender, height, weight, packag));
+                        gym.addMember(new PremiumMember(emailCheck(), name, address, gender, height, weight, packag));
                     }
                     try {
                         gym.saveMember();
@@ -477,12 +519,12 @@ public class MenuController
                     break;
 
                 case 6:
-                    //runBMICatSearch(trainer);
+                    runBMICatSearch(trainer);
 
                     break;
 
                 case 7:
-                    //runAssessments(trainer);
+                    runAssessments(trainer);
                     break;
 
 
@@ -502,10 +544,167 @@ public class MenuController
         System.exit(0);
     }
 
+    private int BMICatSearch(){
+        System.out.println("Select a category:");
+        System.out.println("\t1. VERY Severely Underweight\n" +
+                "\t2. Severely Underweight\n" +
+                "\t3. Underweight\n" +
+                "\t4. Normal\n" +
+                "\t5. Overweight\n" +
+                "\t6. Moderately Obese\n" +
+                "\t7. Severely Obese\n" +
+                "\t8. VERY Severely Obese\n");
+
+        int BMICatOption = validNextInt("==>> ");
+        return BMICatOption;
+    }
+
+    private void runBMICatSearch(Person trainer){
+        int option = BMICatSearch();
+        while (option != 0) {
 
 
+            switch (option) {
 
+                case 1:
+                    // String category = "VERY SEVERELY UNDERWEIGHT";
+                    System.out.println(gym.listBySpecificBMICategory("VERY SEVERELY UNDERWEIGHT"));
+
+                    break;
+
+                case 2:
+                    System.out.println(gym.listBySpecificBMICategory("SEVERELY UNDERWEIGHT"));
+                    break;
+
+                case 3:
+                    System.out.println(gym.listBySpecificBMICategory("UNDERWEIGHT"));
+                    break;
+
+                case 4:
+                    System.out.println(gym.listBySpecificBMICategory("NORMAL"));
+                    break;
+
+                case 5:
+                    System.out.println(gym.listBySpecificBMICategory("OVERWEIGHT"));
+                    break;
+
+                case 6:
+                    System.out.println(gym.listBySpecificBMICategory("MODERATELY OBESE"));
+                    break;
+
+                case 7:
+                    System.out.println(gym.listBySpecificBMICategory("SEVERELY OBESE"));
+                    break;
+
+                case 8:
+                    System.out.println(gym.listBySpecificBMICategory("VERY SEVERELY OBESE"));
+                    break;
+
+                default:
+                    System.out.println("Invalid option entered: " + option);
+                    break;
+            }
+            //pause the program so that the user can read what we just printed to the terminal window
+            System.out.println("\nPress any key to continue...");
+            input.nextLine();
+            input.nextLine();  //this second read is required - bug in Scanner class; a String read is ignored straight after reading an int.
+
+            runTrainerMenu(trainer);
+        }
+    }
+
+    private int assessments(){
+
+        System.out.println("Select a category:");
+        System.out.println("\t1. Add a Member Assessment\n" +
+                "\t2. Update a comment on an assessment for a member\n");
+        System.out.print("==>> ");
+        int assOption = input.nextInt();
+        return assOption;
+    }
+
+    private void runAssessments(Person trainer) {
+        System.out.println(gym.getMembers());
+        int option = assessments();
+        while (option != 0) {
+
+
+            switch (option) {
+
+                case 1:
+                    String name = validNextString("Name:\t");
+                    System.out.println(gym.searchMembersByName(name));
+                    String memberAss = validNextString("Please enter email of member for assessment..\t");
+                    Member member = (gym.searchMembersByEmail(memberAss));
+                    gym.addAssessment(trainer, member);
+                    System.out.println("Assessment logged for " + member.getMemberName());
+
+
+                    break;
+
+                case 2:
+                   // System.out.println(member.lastAssessment().toString());
+                    break;
+
+                case 3:
+                    System.out.println(gym.listBySpecificBMICategory("UNDERWEIGHT"));
+                    break;
+
+                case 4:
+                    System.out.println(gym.listBySpecificBMICategory("NORMAL"));
+                    break;
+
+                case 5:
+                    System.out.println(gym.listBySpecificBMICategory("OVERWEIGHT"));
+                    break;
+
+                case 6:
+                    System.out.println(gym.listBySpecificBMICategory("MODERATELY OBESE"));
+                    break;
+
+                case 7:
+                    System.out.println(gym.listBySpecificBMICategory("SEVERELY OBESE"));
+                    break;
+
+                case 8:
+                    System.out.println(gym.listBySpecificBMICategory("VERY SEVERELY OBESE"));
+                    break;
+
+                default:
+                    System.out.println("Invalid option entered: " + option);
+                    break;
+            }
+            //pause the program so that the user can read what we just printed to the terminal window
+            System.out.println("\nPress any key to continue...");
+            input.nextLine();
+            input.nextLine();  //this second read is required - bug in Scanner class; a String read is ignored straight after reading an int.
+
+            runTrainerMenu(trainer);
+        }
+    }
+
+    public String emailCheck() {
+        String email;
+        while (true) {
+            email = validNextString("Enter Email: ");
+            if ((gym.searchTrainersByEmail(email) == null) && (gym.searchMembersByEmail(email) == null)) {
+                break;
+            } else {
+                System.out.println("Email already in use! ");
+                System.out.println("\nHave we met? :-P Please try again");
+            }
+        }
+        return email;
+
+
+    }
 }
+
+
+
+
+
+
 
     
 

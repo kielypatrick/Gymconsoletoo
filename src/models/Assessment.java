@@ -9,15 +9,14 @@ public class Assessment {
 	private int waist;
 	private int hips;
 	private String comment;
-	private Trainer trainer;
-	private Date date;
-	
+	private Person trainer;
+
 	/**
 	 * Constructor for objects of class Assessment.
 	 */
 	
 	public Assessment(double weight, int chest, int thigh, int upperArm, int waist, 
-			int hips, String comment, Trainer trainer, Date date){
+			int hips, String comment, Person trainer){
 		
 		this.setWeight(weight);
 		this.setChest(chest);
@@ -26,7 +25,7 @@ public class Assessment {
 		this.setWaist(waist);
 		this.setHips(hips);
 		this.setTrainer(trainer);
-		this.date=date;
+
 		
 	}
 
@@ -86,22 +85,16 @@ public class Assessment {
 		this.comment = comment;
 	}
 
-	public Trainer getTrainer() {
+	public Person getTrainer() {
 		return trainer;
 	}
 
-	public void setTrainer(Trainer trainer) {
+	public void setTrainer(Person trainer) {
 		this.trainer = trainer;
 	}
 	
-	public Date getDate() {
-		return date;
-	}
 
-	public void setDate(Date date) {
-		this.date = date;
-	}
-	
+
 	public String toString(){
         return ("Weight:"  + weight
         		+ "\n Chest: "+ chest
@@ -110,8 +103,7 @@ public class Assessment {
         		+ "\n Waist: "+ waist
         		+ "\n Hips: "+ hips
         		+ "\n Comment: "+ comment
-        		+ "\n Trainer: "+ trainer
-        		+ "\n Date: " + date);
+        		+ "\n Trainer: "+ trainer);
 	}         
 	
 }

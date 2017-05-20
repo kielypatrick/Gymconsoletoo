@@ -12,7 +12,7 @@ public abstract class Person
 	private String memberEmail;
 	private String memberName;  
     private String memberAddress; 
-    private String gender;
+    public String gender;
 
     /**
      * Constructor for objects of class Person.
