@@ -5,11 +5,11 @@ public class StudentMember extends Member {
 	
 	 /**
      * Constructor for objects of class StudentMember.
-     * 
-     * @param student Id      The member's student id is 7 digits long i.e. between 1000000 (exclusive) and 
+     *
+     * @param studentId      The member's student id is 7 digits long i.e. between 1000000 (exclusive) and
      *                        9999999 (inclusive).  If an invalid member id is entered, set the member
      *                        id to a default value of 100000.
-     *                        
+     *
      */
 	
 	public StudentMember(String memberEmail, String memberName, String memberAddress, 
@@ -25,7 +25,7 @@ public class StudentMember extends Member {
 		
 		this.collegeName = collegeName;
 	}
-	
+
 	public int getStudentId() {
 		return studentId;
 	}
@@ -44,6 +44,7 @@ public class StudentMember extends Member {
 
 	@Override
 	public void chosenPackage(String chosenPackage) {
+
 
 	}
 }

@@ -82,7 +82,7 @@ public abstract class Person
     //  SETTERS
     //*********************************************************************************** 
     /**
-     * Updates the member id field.
+     * Updates the member email field.
      * 
      */
     public void setMemberEmail(String memberEmail){ 

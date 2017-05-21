@@ -11,7 +11,14 @@ import java.util.TreeMap;
 public class Analytics {
 
 
-    private static double toTwoDecimalPlaces(double num) {
+    /**
+     * Public helper method to truncate decimal numbers
+     *
+     *
+     * @return num truncated to two decimal places
+     **/
+
+    public static double toTwoDecimalPlaces(double num) {
         return (int) (num * 100) / 100.0;
     }
 
@@ -22,10 +29,11 @@ public class Analytics {
      * The formula used for BMI is weight divided by the square of the height.
      *
      * @return the BMI value for the member.  The number returned is truncated to two decimal places.
+     *          Member's starting weight is used until an assessment updates the current weight.
      **/
     public static double calculateBMI(Member member) {
 
-        if (member.sortedAssessmentDates().size() > 0)  //this isn't working yet
+        if (member.sortedAssessmentDates().size() > 0)
              {
             return toTwoDecimalPlaces(member.lastAssessment().getWeight() / (member.getHeight() * member.getHeight()));
         }
@@ -98,6 +106,20 @@ public class Analytics {
      * This method returns a boolean to indicate if the member has an ideal
      * body weight based on the Devine formula.
      *
+     * @return Returns true if the result of the devine formula is within 2 kgs (inclusive) of the
+     *         starting weight; false if it is outside this range.
+    */
+    public static boolean isIdealBodyWeight(Member member)
+    {
+
+        return (      (idealBodyWeight(member) <= (member.startingWeight + 2.0))
+                && (idealBodyWeight(member) >= (member.startingWeight - 2.0))
+        );
+    }
+    /**
+     * This method returns an ideal
+     * body weight based on the Devine formula.
+     *
      * <pre>
      * For males, an ideal body weight is:   50 kg + 2.3 kg for each inch over 5 feet.
      * For females, an ideal body weight is: 45.5 kg + 2.3 kg for each inch over 5 feet.
@@ -106,42 +128,43 @@ public class Analytics {
      *
      * </pre>
      *
-     * @return Returns true if the result of the devine formula is within 2 kgs (inclusive) of the
-     *         starting weight; false if it is outside this range.
+     * @return The result of the devine formula.
      */
-    public static boolean isIdealBodyWeight(Member member)
+    public static double idealBodyWeight(Member member)
     {
         double fiveFeet = 60.0;
-        double idealBodyWeight;
 
         double inches = convertHeightMetresToInches(member);
-
         if (inches <= fiveFeet){
-            if (member.gender.equals("M")){
-                idealBodyWeight = 50;
+            if (member.getMemberGender().equals("M")){
+                return 50;
             }
             else{
-                idealBodyWeight = 45.5;
+                return 45.5;
             }
         }
         else{
-            if (member.gender.equals("M")){
-                idealBodyWeight = 50 + ((inches - fiveFeet) * 2.3);
+            if (member.getMemberGender().equals("M") || member.getMemberGender().equals(("m"))){
+                return toTwoDecimalPlaces(50 + ((inches - fiveFeet) * 2.3));
             }
             else{
-                idealBodyWeight = 45.5 + ((inches - fiveFeet) * 2.3);
+                return toTwoDecimalPlaces(45.5 + ((inches - fiveFeet) * 2.3));
             }
         }
-
-        return (      (idealBodyWeight <= (member.startingWeight + 2.0))
-                && (idealBodyWeight >= (member.startingWeight - 2.0))
-        );
     }
+    /**
+     * This method returns a members proximity to their ideal weight based on the Devine formula.
+     *
+     * @param member the member whose progress is being assessed
+     * @return The difference between member weight and the ideal weight calculated by the devine formula.
+     *          Member's starting weight is used until an assessment updates the current weight.
+     */
 
-
-
-
-
-
-
+    public static double goalWeight(Member member) {
+        if (member.sortedAssessmentDates().size() > 0) {
+            return toTwoDecimalPlaces(member.lastAssessment().getWeight() - idealBodyWeight(member));
+        } else {
+            return toTwoDecimalPlaces(member.getStartingWeight() - idealBodyWeight(member));
+        }
+    }
 }

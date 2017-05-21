@@ -1,6 +1,10 @@
 package models;
 
+import utils.Analytics;
+
+import java.sql.*;
 import java.util.*;
+import java.util.Date;
 
 /**
  * This class stores information Members.This class
@@ -41,7 +45,7 @@ public abstract class Member extends Person {
         } else {
             this.setStartingWeight(0);
         }
-        this.chosenPackage(chosenPackage);
+        this.chosenPackage = chosenPackage;
         member = new HashMap<>();
     }
 
@@ -58,6 +62,12 @@ public abstract class Member extends Person {
         return startingWeight;
     }
 
+    /**
+     * Updates the  startingWeight
+     *
+     * @param startingWeight The new Member starting weight
+     */
+
     public void setStartingWeight(double startingWeight) {
         this.startingWeight = startingWeight;
     }
@@ -66,13 +76,27 @@ public abstract class Member extends Person {
         return height;
     }
 
+    /**
+     * Updates the  member height
+     *
+     * @param height The new Member height
+     */
+
     public void setHeight(double height) {
         this.height = height;
     }
 
-    public HashMap<Date, Assessment> getMember() {
-        return member;
+
+    /**
+     * This method returns the member weight converted from KGs to pounds.
+     *
+     * @return member weight converted from KGs to pounds.
+     * The number returned is truncated to two decimal places.
+     **/
+    public double convertWeightKGtoPounds() {
+        return Analytics.toTwoDecimalPlaces(startingWeight * 2.2);
     }
+
 
     /**
      * Updates the Members chosen package.
@@ -96,6 +120,7 @@ public abstract class Member extends Person {
 
     public SortedSet<Date> sortedAssessmentDates(){
         SortedSet<Date> assessment = new TreeSet<>(member.keySet());
+
         return assessment;
     }
 
@@ -109,6 +134,79 @@ public abstract class Member extends Person {
         return member.get(sortedAssessmentDates().last());
     }
 
+    public void chestProgress(){
+        Set<Map.Entry<Date, Assessment>> entries = member.entrySet();
+        for (HashMap.Entry<Date, Assessment> dateAssessmentEntry : entries) {
+            System.out.println(dateAssessmentEntry.getKey());
+            System.out.println("Chest: " + dateAssessmentEntry.getValue().getChest() + "cm\n");
+
+        }
+    }
+    //ref https://www.youtube.com/watch?v=3hultwSw_nU
+
+    public void waistProgress(){
+        Set<Map.Entry<Date, Assessment>> entries = member.entrySet();
+        for (HashMap.Entry<Date, Assessment> dateAssessmentEntry : entries) {
+            System.out.println(dateAssessmentEntry.getKey());
+            System.out.println("Waist: " + dateAssessmentEntry.getValue().getWaist() + "cm\n");
+
+        }
+    }
+    public void hipsProgress(){
+        Set<Map.Entry<Date, Assessment>> entries = member.entrySet();
+        for (HashMap.Entry<Date, Assessment> dateAssessmentEntry : entries) {
+            System.out.println(dateAssessmentEntry.getKey());
+            System.out.println("Hips: " + dateAssessmentEntry.getValue().getHips() + "cm\n");
+
+        }
+    }
+    public void thighProgress(){
+        Set<Map.Entry<Date, Assessment>> entries = member.entrySet();
+        for (HashMap.Entry<Date, Assessment> dateAssessmentEntry : entries) {
+            System.out.println(dateAssessmentEntry.getKey());
+            System.out.println("Thigh: " + dateAssessmentEntry.getValue().getThigh() + "cm\n");
+
+        }
+    }
+    public void upperArmProgress(){
+        Set<Map.Entry<Date, Assessment>> entries = member.entrySet();
+        for (HashMap.Entry<Date, Assessment> dateAssessmentEntry : entries) {
+            System.out.println(dateAssessmentEntry.getKey());
+            System.out.println("Upper Arm: " + dateAssessmentEntry.getValue().getUpperArm() + "cm\n");
+        }
+    }
+
+    public void weightProgress(){
+        Set<Map.Entry<Date, Assessment>> entries = member.entrySet();
+        for (HashMap.Entry<Date, Assessment> dateAssessmentEntry : entries) {
+            System.out.println(dateAssessmentEntry.getKey());
+            System.out.println("Weight: " + dateAssessmentEntry.getValue().getWeight() + "kg\n");
+
+        }
+    }
+
+
+    public void weightTrend(){
+        Set<Map.Entry<Date, Assessment>> entries = member.entrySet();
+        for (HashMap.Entry<Date, Assessment> dateAssessmentEntry : entries) {
+
+            System.out.println(dateAssessmentEntry.getValue().getWeight());
+
+        }
+    }
+
+   /* public Iterator<Assessment> getIterator() {
+
+        Collection<Assessment> collection = member.values();
+        Iterator<Assessment> iterator = collection.iterator();
+        while (iterator.hasNext()){
+         return System.out.println(collection);
+        }
+    }
+*/
+
+
+
 
     public void addAssessment(Assessment memAssessment)
     {
@@ -121,7 +219,7 @@ public abstract class Member extends Person {
      * multiplied by 39.37.  The number returned is truncated to two decimal places.
      **/
     public double convertHeightMetresToInches() {
-        return (height * 39.37);
+        return Analytics.toTwoDecimalPlaces(height * 39.37);
     }
 
 

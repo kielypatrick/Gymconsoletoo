@@ -52,23 +52,11 @@ public GymApi(){
         members.add(member);
     }
 
-
-
-    public void addMembers(){
-      members.add(new StudentMember("J", "John", "Kilkenny",
-            "m", 1.91, 91, "Student Plus", 59346, "WIT"));
-
-    }
-
-
-    public void addTrainers(){
-        trainers.add(new Trainer("q", "Patrick", "Waterford",
-                "m", "Injury Rehab"));
-
-    }
-
-        
-
+    /**
+     *  Adds a trainer to the gym collection.
+     *
+     *  @param trainer The trainer object that will be added to the gym collection.
+     */
     public void addTrainer(Trainer trainer)
     {
         trainers.add(trainer);
@@ -132,16 +120,16 @@ public GymApi(){
     }
 
     /**
-     *  Returns a String representing all the members stored in the gym collection.
+     *  Returns a String representing all the trainers stored in the gym collection.
      *
      *  @return String representing all the members stored in the gym collection.  The String returned is similar to this structure,
      *  with the preceeding number representing the index number of the member within the collection:
      *
      * <pre>
      *
-     *    0: member's toString() format
-     *    1: member's toString() format
-     *    2: member's toString() format
+     *    0: trainer's toString() format
+     *    1: trainer's toString() format
+     *    2: trainer's toString() format
      *
      * </pre>
      */
@@ -167,7 +155,16 @@ public GymApi(){
         return ((index >= 0) && (index < numberOfTrainers()));
 
     }
-    
+
+
+    /**
+     *  Method to search the member names for the string entered.
+     *
+     *  @param nameEntered The string being searched for in the member name field
+     *  @return all members whose name contains nameEntered
+     */
+
+
     public String searchMembersByName(String nameEntered){
     	 if (members.size() > 0){
              String listOfMembers = "";
@@ -186,7 +183,14 @@ public GymApi(){
             return "There are no members in the gym";
         }
     }
-    
+
+    /**
+     *  Method to search the member email addresses for the string entered.
+     *
+     *  @param emailEntered The string being searched for in the member email field
+     *  @return all members whose email contains emailEntered
+     */
+
     public Member searchMembersByEmail(String emailEntered){
 
         for (Member member: members){
@@ -200,8 +204,14 @@ public GymApi(){
         }
 		return null;            
     }
-    
-    
+
+
+    /**
+     *  Method to search the trainer email addresses for the string entered.
+     *
+     *  @param emailEntered The string being searched for in the trainer email field
+     *  @return all trainers whose name contains emailEntered
+     */
     
     public Person searchTrainersByEmail(String emailEntered){
 
@@ -227,6 +237,18 @@ public GymApi(){
         is.close();
     }
 
+    public void loadTrainer() throws Exception
+    {
+        XStream xstream = new XStream(new DomDriver());
+        ObjectInputStream is = xstream.createObjectInputStream
+                (new FileReader("trainers.xml"));
+        trainers = (ArrayList<Trainer>) is.readObject();
+        is.close();
+    }
+
+
+
+
 
     public void saveMember() throws Exception
     {
@@ -246,6 +268,8 @@ public GymApi(){
         out.writeObject(trainers);
         out.close();
     }
+
+
     //***********************************************************************************
     //  ARRAY LIST INTERROGATION AND SUMMATION METHODS
     //***********************************************************************************
@@ -341,12 +365,10 @@ public GymApi(){
     /**
      * Returns a human-readable String representation of the object state.
      *
-     * @return a String version of the Gym object.  The String returned is similar to this structure:
+     * @return a list of all Gym members.  The String returned is similar to this structure:
      *
      * <pre>
-     *
-     *    Gym name: High Flyer Gym, Manager: Eddie the Eagle, Phone Number: 0519665654343.
-     *
+          *
      *    List of members in the gym:
      *    (list all of the members here)
      *
@@ -356,6 +378,14 @@ public GymApi(){
         return ( "List of members in the gym:\n"
                 + getMembers());
     }
+
+    /**
+     *  Adds an assessment to a member object collection.
+     *
+     *  @param member The member object having the assessment recorded.
+     *
+     */
+
 
     public void addAssessment(Person trainer, Member member) {
         double weight;
@@ -377,12 +407,75 @@ public GymApi(){
         String comment = validNextString("Trainer Comment:\t");
 
         member.addAssessment(new Assessment(weight, chest, thigh, upperArm, waist, hips, comment, trainer));
+        System.out.println("SAVED!!");
     }
 
     public boolean isValidIndex(int index)
     {
         return ( (index >= 0) && (index < members.size()) );
     }
+
+    /**
+     * List all the members' weight and height both imperially and metrically.
+     *
+     * @return Each member in the gym with the weight and height listed both imperially and metrically.
+     *
+     * <pre>
+     * The format of the output is like so:
+     *
+     *     Joe Soap:     xx kg (xxx lbs)     x.x metres (xx inches).
+     *     Joan Soap:    xx kg (xxx lbs)     x.x metres (xx inches).
+     *
+     * If there are no members in the gym, the message
+     *      "There are no members in the gym" should be returned.
+     * </pre>
+     */
+    public String listMemberDetailsImperialAndMetric(){
+        if (members.size() > 0){
+            String listOfMembers = "";
+            for (Member member: members){
+                listOfMembers += member.getMemberName() + ":\n\t"
+                        + member.getStartingWeight() + " kg ("
+                        + member.convertWeightKGtoPounds() + " lbs)\t\t"
+                        + member.getHeight() + " metres ("
+                        + member.convertHeightMetresToInches() + " inches)."
+                        + "\n";
+            }
+            return listOfMembers;
+        }
+        else{
+            return "There are no members in the gym.";
+        }
+    }
+    /**
+     * List all the members' proximity to their ideal weight.
+     *
+     * @return The difference betweem each member's current and ideal weight.
+     *
+     * <pre>
+     * The format of the output is like so:
+     *
+     *     Joe Soap:     xxkg
+     *     Joan Soap:    -xxkg
+     *
+     * If there are no members in the gym, the message
+     *      "There are no members in the gym" should be returned.
+     * </pre>
+     */
+
+    public String listMemberGoalAchievement(){
+        if (members.size() > 0){
+            String listOfMembers = "";
+            for (Member member: members){
+                listOfMembers += "\t" + member.getMemberName() + "\t" + Analytics.goalWeight(member) + "kg\n" ;
+            }
+            return listOfMembers;
+        }
+        else{
+            return "There are no members in the gym.";
+        }
+    }
+
 
 
 
